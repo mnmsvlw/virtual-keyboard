@@ -31,6 +31,7 @@ body {
 }
 
 .textarea-header {
+  position: relative;
   height: 45px;
   width: 100%;
   background-color: #202020;
@@ -51,10 +52,18 @@ body {
   padding: 20px;
   resize: none;
   background-color: #272727;
-  font-size: 16px;
+  font-size: 18px;
   border-bottom-left-radius: 7px;
   border-bottom-right-radius: 7px;
   color: azure;
+}
+
+.textarea-header__title {
+  color: azure;
+  font: 700 14px 'Segoe UI';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .textarea-header__close,
@@ -152,7 +161,6 @@ body {
   height: 45px;
   background-color: #24292e;
   margin-left: 4px;
-  text-align: center;
   line-height: 45px;
   color: azure;
   border: 1px solid #151516;
@@ -160,6 +168,7 @@ body {
   transition: transform 0.15s, background-color 0.15s;
   transform-style: preserve-3d;
   cursor: pointer;
+  user-select: none;
 }
 
 .keyboard__button::before {
@@ -188,14 +197,34 @@ body {
   transform: translate3d(0, 0.3em, -1em);
 }
 
+.keyboard__button_active,
 .keyboard__button:active {
   background-color: #1c2023;
   transform: translate(0, 0.4em);
 }
 
+.keyboard__button_active::before,
 .keyboard__button:active::before {
   box-shadow: 0 0 0 1px #151516, 0 0 0 0 #000;
   transform: translate3d(0, 0em, -1em);
+}
+
+.CapsLock::after {
+  position: absolute;
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: #2f363d;
+  border: 1px solid #151516;
+  right: 5px;
+  top: 5px;
+  transition: background-color .15s;
+}
+
+.keyboard.caps .CapsLock::after,
+.CapsLock.keyboard__button_active::after {
+  background-color: #00CD1B;
 }
 
 .Backspace,
@@ -204,6 +233,7 @@ body {
 }
 
 .CapsLock {
+  position: relative;
   width: 90px;
 }
 
@@ -211,8 +241,7 @@ body {
   width: 85px;
 }
 
-.Tab, 
-.Backslash {
+.Tab {
   width: 75px;
 }
 
@@ -222,4 +251,22 @@ body {
 
 .Space {
   width: 350px;
+}
+
+.rus .lower,
+.rus .upper,
+.eng .lower,
+.eng .upper {
+  visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+
+.keyboard.ru.low .rus .lower,
+.keyboard.ru.upp .rus .upper,
+.keyboard.en.low .eng .lower,
+.keyboard.en.upp .eng .upper {
+  visibility: visible;
 }
