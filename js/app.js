@@ -7,6 +7,8 @@ let textareaElem
 let currentLocale = 'eng'
 let currentCase = 'lower'
 let caps = false
+let lastInput
+let ignoredKeys = ['Backspace', 'Tab', 'Delete', 'CapsLock', 'Enter', 'ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight', 'AltLeft', 'AltRight', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'MetaLeft']
 
 init()
 
@@ -22,7 +24,6 @@ function init() {
 
   document.body.appendChild(container)
   addListeners()
-  textareaElem = document.querySelector('.textarea')
 }
 
 function createCustomElement(elem, customClassList, attributes = false) {
@@ -41,7 +42,13 @@ function createCustomElement(elem, customClassList, attributes = false) {
 
 function createKeyboardButtons(keyboardElem) {
   for (let key of keys) {
-    const keyButton = createCustomElement('div', `keyboard__button ${key.eventCode}`)
+    let keyButton
+    if (key.eventCode.startsWith('Key')) {
+      keyButton = createCustomElement('div', `keyboard__button ${key.eventCode} key`)
+    } else {
+      keyButton = createCustomElement('div', `keyboard__button ${key.eventCode}`)
+    }
+    
 
     const engCase = createCustomElement('div', 'eng')
     const engLower = createCustomElement('div', 'lower')
@@ -95,22 +102,55 @@ function addListeners() {
     const button = document.querySelector(`.${event.code}`)
     button.classList.add('keyboard__button_active')
     
-    if ((event.key === 'Alt' && event.ctrlKey) || (event.key === 'Ctrl' && event.altKey)) {
-      currentLocale = currentLocale === 'eng' ? 'rus' : 'eng'
-      console.log(currentLocale)
-      setLocaleAndCase()
-    }
+    if (ignoredKeys.includes(event.code)) {
+      
+      if ((event.key === 'Alt' && event.ctrlKey) || (event.key === 'Ctrl' && event.altKey)) {
+        currentLocale = currentLocale === 'eng' ? 'rus' : 'eng'
+        console.log(currentLocale)
+        setLocaleAndCase()
+      } 
+      
+      if (event.key === 'Shift' && !event.repeat) {
+        currentCase = currentCase === 'lower' ? 'upper' : 'lower'
+        setLocaleAndCase()
+      } 
+      
+      if (event.key === 'CapsLock' && !event.repeat) {
+        caps = !caps
+        currentCase = currentCase === 'lower' ? 'upper' : 'lower'
+        setLocaleAndCase()
+      }
 
-    if (event.key === 'Shift' && !event.repeat) {
-      currentCase = currentCase === 'lower' ? 'upper' : 'lower'
-      setLocaleAndCase()
-    }
+      if (event.key == 'Backspace') {
+        if (textareaElem.selectionStart === textareaElem.selectionEnd) {
+          textareaText = textareaText.substring(0, textareaElem.selectionStart - 1) + textareaText.substring(textareaElem.selectionStart, textareaText.length)
+        } else {
+          textareaText = textareaText.substring(0, textareaElem.selectionStart) + textareaText.substring(textareaElem.selectionEnd, textareaText.length)
+        }
+        
+      }
 
-    if (event.key === 'CapsLock' && !event.repeat) {
-      caps = !caps
-      currentCase = currentCase === 'lower' ? 'upper' : 'lower'
-      setLocaleAndCase()
-    }
+      if (event.key == 'Delete') {
+        if (textareaElem.selectionStart === textareaElem.selectionEnd) {
+        textareaText = textareaText.substring(0, textareaElem.selectionStart) + textareaText.substring(textareaElem.selectionStart + 1, textareaText.length)
+        } else {
+          textareaText = textareaText.substring(0, textareaElem.selectionStart) + textareaText.substring(textareaElem.selectionEnd, textareaText.length)
+        }
+      }
+
+      if (event.key == 'Enter') {
+        textareaText = textareaText.substring(0, textareaElem.selectionStart) + '\n' + textareaText.substring(textareaElem.selectionEnd + 1, textareaText.length)
+      }
+
+      if (event.key == 'Tab') {
+        event.preventDefault()
+        textareaText = textareaText.substring(0, textareaElem.selectionStart) + '    ' + textareaText.substring(textareaElem.selectionEnd + 1, textareaText.length)
+        textareaElem.value = textareaText
+      }
+    
+  } else {
+    updateTextarea(event.code)
+  }
   })
 
   document.addEventListener('keyup', (event) => {
@@ -123,6 +163,18 @@ function addListeners() {
     }
   })
 
+  textareaElem = document.querySelector('.textarea')
+  textareaElem.tabIndex = -1
+  textareaElem.addEventListener('input', event => {
+    // event.preventDefault()
+    // console.log(event)
+    let index = textareaElem.selectionStart
+    event.target.value = textareaText
+    textareaElem.selectionStart = index
+    textareaElem.selectionEnd = index
+    console.dir(textareaElem)
+    // event.data = lastInput
+  })
 }
 
 function setLocaleAndCase() {
@@ -132,5 +184,22 @@ function setLocaleAndCase() {
   } else {
     keyboard.classList = `keyboard ${currentLocale.slice(0,2)} ${currentCase.slice(0,3)} caps`
   }
-  
 }
+
+function updateTextarea(code) {
+  const char = keys.find((item) => code === item.eventCode)
+  // console.log(char)
+  // // textareaElem.value = ''
+  const index = textareaElem.selectionStart
+  const endIndex = textareaElem.selectionEnd
+  if (index === endIndex) {
+    textareaText = textareaText.substring(0, index) + char[currentLocale][currentCase] + textareaText.substring(index, textareaText.length)
+  } else {
+    textareaText = textareaText.substring(0, index) + char[currentLocale][currentCase] + textareaText.substring(endIndex, textareaText.length)
+  }
+  console.log(textareaText)
+  // textareaElem.value = textareaText
+  // textareaElem.selectionStart = index
+  // textareaElem.selectionEnd = index
+}
+

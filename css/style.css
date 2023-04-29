@@ -270,3 +270,21 @@ body {
 .keyboard.en.upp .eng .upper {
   visibility: visible;
 }
+
+/* .keyboard.ru.low.caps .key .rus .upper,
+.keyboard.ru.upp.caps .key .rus .lower,
+.keyboard.en.low.caps .key .eng .upper,
+.keyboard.en.upp.caps .key .eng .lower,
+.keyboard.ru.upp.caps .Backquote .rus .lower,
+.keyboard.ru.low.caps .Backquote .rus .upper {
+  visibility: visible;
+}
+
+.keyboard.ru.low.caps .key .rus .lower,
+.keyboard.ru.upp.caps .key .rus .upper,
+.keyboard.en.low.caps .key .eng .lower,
+.keyboard.en.upp.caps .key .eng .upper,
+.keyboard.ru.upp.caps .Backquote .rus .upper,
+.keyboard.ru.low.caps .Backquote .rus .lower {
+  visibility: hidden;
+} */
