@@ -7,7 +7,7 @@ let textareaElem
 let currentLocale = 'eng'
 let currentCase = 'lower'
 let caps = false
-let lastInput
+let selection
 let ignoredKeys = ['Backspace', 'Tab', 'Delete', 'CapsLock', 'Enter', 'ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight', 'AltLeft', 'AltRight', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'MetaLeft']
 
 init()
@@ -42,13 +42,8 @@ function createCustomElement(elem, customClassList, attributes = false) {
 
 function createKeyboardButtons(keyboardElem) {
   for (let key of keys) {
-    let keyButton
-    if (key.eventCode.startsWith('Key')) {
-      keyButton = createCustomElement('div', `keyboard__button ${key.eventCode} key`)
-    } else {
-      keyButton = createCustomElement('div', `keyboard__button ${key.eventCode}`)
-    }
-    
+
+    const keyButton = createCustomElement('div', `keyboard__button ${key.eventCode}`)
 
     const engCase = createCustomElement('div', 'eng')
     const engLower = createCustomElement('div', 'lower')
@@ -57,6 +52,12 @@ function createKeyboardButtons(keyboardElem) {
     const engUpper = createCustomElement('div', 'upper')
     engUpper.textContent = key.eng.upper
     engCase.appendChild(engUpper)
+    const engCaps = createCustomElement('div', 'capsed')
+    engCaps.textContent = key.eng.caps
+    engCase.appendChild(engCaps)
+    const engShiftCaps = createCustomElement('div', 'shiftcapsed')
+    engShiftCaps.textContent = key.eng.shiftCaps
+    engCase.appendChild(engShiftCaps)
     keyButton.appendChild(engCase)
 
     const rusCase = createCustomElement('div', 'rus')
@@ -66,13 +67,36 @@ function createKeyboardButtons(keyboardElem) {
     const rusUpper = createCustomElement('div', 'upper')
     rusUpper.textContent = key.rus.upper
     rusCase.appendChild(rusUpper)
+    const rusCaps = createCustomElement('div', 'capsed')
+    rusCaps.textContent = key.rus.caps
+    rusCase.appendChild(rusCaps)
+    const rusShiftCaps = createCustomElement('div', 'shiftcapsed')
+    rusShiftCaps.textContent = key.rus.shiftCaps
+    rusCase.appendChild(rusShiftCaps)
     keyButton.appendChild(rusCase)
 
     keyboardElem.appendChild(keyButton)
-    keyButton.addEventListener('click', () => {
-      textareaText += key.eng
+    keyButton.addEventListener('mousedown', (event) => {
+      selection = textareaElem.selectionStart + 1
+      const code = event.target.closest('.keyboard__button').classList[1]
+      clickButton(code)
       textareaElem.value = textareaText
-    } )
+    })
+
+    keyButton.addEventListener('mouseup', (event) => {
+      console.dir(textareaElem)
+      textareaElem.focus()
+      textareaElem.selectionStart = selection
+      textareaElem.selectionEnd = selection
+      console.dir(textareaElem)
+      const button = event.target.closest('.keyboard__button')
+      button.classList.remove('keyboard__button_active')
+      const code = button.classList[1]
+      if (code.startsWith('Shift')) {
+        currentCase = currentCase === 'lower' ? 'upper' : 'lower'
+        setLocaleAndCase()
+      }
+    })
   }
 }
 
@@ -99,58 +123,7 @@ function createTextareaWindow(textareaWrapper) {
 function addListeners() {
   const textarea = document.querySelector('.textarea')
   document.addEventListener('keydown', (event) => {
-    const button = document.querySelector(`.${event.code}`)
-    button.classList.add('keyboard__button_active')
-    
-    if (ignoredKeys.includes(event.code)) {
-      
-      if ((event.key === 'Alt' && event.ctrlKey) || (event.key === 'Ctrl' && event.altKey)) {
-        currentLocale = currentLocale === 'eng' ? 'rus' : 'eng'
-        console.log(currentLocale)
-        setLocaleAndCase()
-      } 
-      
-      if (event.key === 'Shift' && !event.repeat) {
-        currentCase = currentCase === 'lower' ? 'upper' : 'lower'
-        setLocaleAndCase()
-      } 
-      
-      if (event.key === 'CapsLock' && !event.repeat) {
-        caps = !caps
-        currentCase = currentCase === 'lower' ? 'upper' : 'lower'
-        setLocaleAndCase()
-      }
-
-      if (event.key == 'Backspace') {
-        if (textareaElem.selectionStart === textareaElem.selectionEnd) {
-          textareaText = textareaText.substring(0, textareaElem.selectionStart - 1) + textareaText.substring(textareaElem.selectionStart, textareaText.length)
-        } else {
-          textareaText = textareaText.substring(0, textareaElem.selectionStart) + textareaText.substring(textareaElem.selectionEnd, textareaText.length)
-        }
-        
-      }
-
-      if (event.key == 'Delete') {
-        if (textareaElem.selectionStart === textareaElem.selectionEnd) {
-        textareaText = textareaText.substring(0, textareaElem.selectionStart) + textareaText.substring(textareaElem.selectionStart + 1, textareaText.length)
-        } else {
-          textareaText = textareaText.substring(0, textareaElem.selectionStart) + textareaText.substring(textareaElem.selectionEnd, textareaText.length)
-        }
-      }
-
-      if (event.key == 'Enter') {
-        textareaText = textareaText.substring(0, textareaElem.selectionStart) + '\n' + textareaText.substring(textareaElem.selectionEnd + 1, textareaText.length)
-      }
-
-      if (event.key == 'Tab') {
-        event.preventDefault()
-        textareaText = textareaText.substring(0, textareaElem.selectionStart) + '    ' + textareaText.substring(textareaElem.selectionEnd + 1, textareaText.length)
-        textareaElem.value = textareaText
-      }
-    
-  } else {
-    updateTextarea(event.code)
-  }
+    pressButton(event)
   })
 
   document.addEventListener('keyup', (event) => {
@@ -187,19 +160,134 @@ function setLocaleAndCase() {
 }
 
 function updateTextarea(code) {
-  const char = keys.find((item) => code === item.eventCode)
+  let char = keys.find((item) => code === item.eventCode)
   // console.log(char)
   // // textareaElem.value = ''
   const index = textareaElem.selectionStart
   const endIndex = textareaElem.selectionEnd
-  if (index === endIndex) {
-    textareaText = textareaText.substring(0, index) + char[currentLocale][currentCase] + textareaText.substring(index, textareaText.length)
+
+  if (currentCase === 'lower' && caps) {
+    char = char[currentLocale]['caps']
+  } else if (currentCase === 'upper' && caps) {
+    char = char[currentLocale]['shiftCaps']
   } else {
-    textareaText = textareaText.substring(0, index) + char[currentLocale][currentCase] + textareaText.substring(endIndex, textareaText.length)
+    char = char[currentLocale][currentCase]
   }
-  console.log(textareaText)
+
+  if (index === endIndex) {
+    textareaText = textareaText.substring(0, index) + char + textareaText.substring(index, textareaText.length)
+  } else {
+    textareaText = textareaText.substring(0, index) + char + textareaText.substring(endIndex, textareaText.length)
+  }
+  textareaElem.value = textareaText
+  textareaElem.selectionStart = index
+  textareaElem.selectionEnd = endIndex
+  //   console.dir(textareaElem)
+  // console.log(textareaText)
   // textareaElem.value = textareaText
   // textareaElem.selectionStart = index
   // textareaElem.selectionEnd = index
 }
 
+function pressButton(event) {
+  const button = document.querySelector(`.${event.code}`)
+    button.classList.add('keyboard__button_active')
+    
+    if (ignoredKeys.includes(event.code)) {
+      
+      if ((event.key === 'Alt' && event.ctrlKey) || (event.key === 'Ctrl' && event.altKey)) {
+        currentLocale = currentLocale === 'eng' ? 'rus' : 'eng'
+        console.log(currentLocale)
+        setLocaleAndCase()
+      } 
+      
+      if (event.key === 'Shift' && !event.repeat) {
+        currentCase = currentCase === 'lower' ? 'upper' : 'lower'
+        setLocaleAndCase()
+      } 
+      
+      if (event.key === 'CapsLock' && !event.repeat) {
+        caps = !caps
+        // currentCase = currentCase === 'lower' ? 'upper' : 'lower'
+        setLocaleAndCase()
+      }
+
+      if (event.key == 'Backspace') {
+        if (textareaElem.selectionStart === textareaElem.selectionEnd) {
+          textareaText = textareaText.substring(0, textareaElem.selectionStart - 1) + textareaText.substring(textareaElem.selectionStart, textareaText.length)
+        } else {
+          textareaText = textareaText.substring(0, textareaElem.selectionStart) + textareaText.substring(textareaElem.selectionEnd, textareaText.length)
+        }
+        
+      }
+
+      if (event.key == 'Delete') {
+        if (textareaElem.selectionStart === textareaElem.selectionEnd) {
+        textareaText = textareaText.substring(0, textareaElem.selectionStart) + textareaText.substring(textareaElem.selectionStart + 1, textareaText.length)
+        } else {
+          textareaText = textareaText.substring(0, textareaElem.selectionStart) + textareaText.substring(textareaElem.selectionEnd, textareaText.length)
+        }
+      }
+
+      if (event.key == 'Enter') {
+        textareaText = textareaText.substring(0, textareaElem.selectionStart) + '\n' + textareaText.substring(textareaElem.selectionEnd + 1, textareaText.length)
+      }
+
+      if (event.key == 'Tab') {
+        event.preventDefault()
+        textareaText = textareaText.substring(0, textareaElem.selectionStart) + '    ' + textareaText.substring(textareaElem.selectionEnd + 1, textareaText.length)
+        textareaElem.value = textareaText
+      }
+    
+  } else {
+    updateTextarea(event.code)
+  }
+}
+
+function clickButton(code) {
+  const button = document.querySelector(`.${code}`)
+    button.classList.add('keyboard__button_active')
+    
+    if (ignoredKeys.includes(code)) {
+
+      if (code.startsWith('Shift')) {
+        currentCase = currentCase === 'lower' ? 'upper' : 'lower'
+        setLocaleAndCase()
+      } 
+      
+      if (code === 'CapsLock') {
+        caps = !caps
+        // currentCase = currentCase === 'lower' ? 'upper' : 'lower'
+        setLocaleAndCase()
+      }
+
+      if (code == 'Backspace') {
+        if (textareaElem.selectionStart === textareaElem.selectionEnd) {
+          textareaText = textareaText.substring(0, textareaElem.selectionStart - 1) + textareaText.substring(textareaElem.selectionStart, textareaText.length)
+        } else {
+          textareaText = textareaText.substring(0, textareaElem.selectionStart) + textareaText.substring(textareaElem.selectionEnd, textareaText.length)
+        }
+        
+      }
+
+      if (code == 'Delete') {
+        if (textareaElem.selectionStart === textareaElem.selectionEnd) {
+        textareaText = textareaText.substring(0, textareaElem.selectionStart) + textareaText.substring(textareaElem.selectionStart + 1, textareaText.length)
+        } else {
+          textareaText = textareaText.substring(0, textareaElem.selectionStart) + textareaText.substring(textareaElem.selectionEnd, textareaText.length)
+        }
+      }
+
+      if (code == 'Enter') {
+        textareaText = textareaText.substring(0, textareaElem.selectionStart) + '\n' + textareaText.substring(textareaElem.selectionEnd + 1, textareaText.length)
+      }
+
+      if (code == 'Tab') {
+        textareaText = textareaText.substring(0, textareaElem.selectionStart) + '    ' + textareaText.substring(textareaElem.selectionEnd + 1, textareaText.length)
+        textareaElem.value = textareaText
+      }
+    
+  } else {
+    updateTextarea(code)
+  }
+}

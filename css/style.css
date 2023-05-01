@@ -256,7 +256,11 @@ body {
 .rus .lower,
 .rus .upper,
 .eng .lower,
-.eng .upper {
+.eng .upper,
+.rus .capsed,
+.rus .shiftcapsed,
+.eng .capsed,
+.eng .shiftcapsed {
   visibility: hidden;
   position: absolute;
   top: 0;
@@ -267,8 +271,19 @@ body {
 .keyboard.ru.low .rus .lower,
 .keyboard.ru.upp .rus .upper,
 .keyboard.en.low .eng .lower,
-.keyboard.en.upp .eng .upper {
+.keyboard.en.upp .eng .upper,
+.keyboard.ru.low.caps .rus .capsed,
+.keyboard.en.low.caps .eng .capsed,
+.keyboard.ru.upp.caps .rus .shiftcapsed,
+.keyboard.en.upp.caps .eng .shiftcapsed{
   visibility: visible;
+}
+
+.keyboard.en.low.caps .eng .lower,
+.keyboard.en.upp.caps .eng .upper,
+.keyboard.ru.low.caps .rus .lower,
+.keyboard.ru.upp.caps .rus .upper {
+  visibility: hidden;
 }
 
 /* .keyboard.ru.low.caps .key .rus .upper,
