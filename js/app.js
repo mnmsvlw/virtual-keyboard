@@ -1,7 +1,5 @@
 import keys from './keys.js'
 
-document.onkeydown = (event) => console.log(event)
-
 let textareaText = ''
 let textareaElem
 let currentLocale = 'eng'
@@ -77,18 +75,24 @@ function createKeyboardButtons(keyboardElem) {
 
     keyboardElem.appendChild(keyButton)
     keyButton.addEventListener('mousedown', (event) => {
-      selection = textareaElem.selectionStart + 1
       const code = event.target.closest('.keyboard__button').classList[1]
+      if (code === 'Tab') {
+        selection = textareaElem.selectionStart + 4
+      } else if (code !== 'Delete' && !code.startsWith('Alt') && !code.startsWith('Control') && code !== 'Backspace' && !code.startsWith('Shift') && code !== 'CapsLock' && !code.startsWith('Meta')) {
+        selection = textareaElem.selectionStart + 1
+      } else if (code === 'Backspace') {
+        selection = textareaElem.selectionStart - 1
+      } else {
+        selection = textareaElem.selectionStart
+      }
       clickButton(code)
       textareaElem.value = textareaText
     })
 
     keyButton.addEventListener('mouseup', (event) => {
-      console.dir(textareaElem)
       textareaElem.focus()
       textareaElem.selectionStart = selection
       textareaElem.selectionEnd = selection
-      console.dir(textareaElem)
       const button = event.target.closest('.keyboard__button')
       button.classList.remove('keyboard__button_active')
       const code = button.classList[1]
@@ -121,7 +125,6 @@ function createTextareaWindow(textareaWrapper) {
 }
 
 function addListeners() {
-  const textarea = document.querySelector('.textarea')
   document.addEventListener('keydown', (event) => {
     pressButton(event)
   })
@@ -139,14 +142,10 @@ function addListeners() {
   textareaElem = document.querySelector('.textarea')
   textareaElem.tabIndex = -1
   textareaElem.addEventListener('input', event => {
-    // event.preventDefault()
-    // console.log(event)
     let index = textareaElem.selectionStart
     event.target.value = textareaText
     textareaElem.selectionStart = index
     textareaElem.selectionEnd = index
-    console.dir(textareaElem)
-    // event.data = lastInput
   })
 }
 
@@ -161,8 +160,6 @@ function setLocaleAndCase() {
 
 function updateTextarea(code) {
   let char = keys.find((item) => code === item.eventCode)
-  // console.log(char)
-  // // textareaElem.value = ''
   const index = textareaElem.selectionStart
   const endIndex = textareaElem.selectionEnd
 
@@ -182,11 +179,6 @@ function updateTextarea(code) {
   textareaElem.value = textareaText
   textareaElem.selectionStart = index
   textareaElem.selectionEnd = endIndex
-  //   console.dir(textareaElem)
-  // console.log(textareaText)
-  // textareaElem.value = textareaText
-  // textareaElem.selectionStart = index
-  // textareaElem.selectionEnd = index
 }
 
 function pressButton(event) {
@@ -197,7 +189,6 @@ function pressButton(event) {
       
       if ((event.key === 'Alt' && event.ctrlKey) || (event.key === 'Ctrl' && event.altKey)) {
         currentLocale = currentLocale === 'eng' ? 'rus' : 'eng'
-        console.log(currentLocale)
         setLocaleAndCase()
       } 
       
@@ -208,11 +199,10 @@ function pressButton(event) {
       
       if (event.key === 'CapsLock' && !event.repeat) {
         caps = !caps
-        // currentCase = currentCase === 'lower' ? 'upper' : 'lower'
         setLocaleAndCase()
       }
 
-      if (event.key == 'Backspace') {
+      if (event.key === 'Backspace') {
         if (textareaElem.selectionStart === textareaElem.selectionEnd) {
           textareaText = textareaText.substring(0, textareaElem.selectionStart - 1) + textareaText.substring(textareaElem.selectionStart, textareaText.length)
         } else {
@@ -221,7 +211,7 @@ function pressButton(event) {
         
       }
 
-      if (event.key == 'Delete') {
+      if (event.key === 'Delete') {
         if (textareaElem.selectionStart === textareaElem.selectionEnd) {
         textareaText = textareaText.substring(0, textareaElem.selectionStart) + textareaText.substring(textareaElem.selectionStart + 1, textareaText.length)
         } else {
@@ -229,14 +219,20 @@ function pressButton(event) {
         }
       }
 
-      if (event.key == 'Enter') {
-        textareaText = textareaText.substring(0, textareaElem.selectionStart) + '\n' + textareaText.substring(textareaElem.selectionEnd + 1, textareaText.length)
+      if (event.key === 'Enter') {
+        textareaText = textareaText.substring(0, textareaElem.selectionStart) + '\n' + textareaText.substring(textareaElem.selectionEnd, textareaText.length)
       }
 
-      if (event.key == 'Tab') {
+      if (event.key === 'Tab') {
         event.preventDefault()
-        textareaText = textareaText.substring(0, textareaElem.selectionStart) + '    ' + textareaText.substring(textareaElem.selectionEnd + 1, textareaText.length)
+        textareaText = textareaText.substring(0, textareaElem.selectionStart) + '    ' + textareaText.substring(textareaElem.selectionEnd, textareaText.length)
         textareaElem.value = textareaText
+      }
+
+      if (event.key.startsWith('Arrow')) {
+        event.preventDefault()
+        updateTextarea(event.code)
+        textareaElem.selectionStart++
       }
     
   } else {
@@ -257,11 +253,10 @@ function clickButton(code) {
       
       if (code === 'CapsLock') {
         caps = !caps
-        // currentCase = currentCase === 'lower' ? 'upper' : 'lower'
         setLocaleAndCase()
       }
 
-      if (code == 'Backspace') {
+      if (code === 'Backspace') {
         if (textareaElem.selectionStart === textareaElem.selectionEnd) {
           textareaText = textareaText.substring(0, textareaElem.selectionStart - 1) + textareaText.substring(textareaElem.selectionStart, textareaText.length)
         } else {
@@ -270,7 +265,7 @@ function clickButton(code) {
         
       }
 
-      if (code == 'Delete') {
+      if (code === 'Delete') {
         if (textareaElem.selectionStart === textareaElem.selectionEnd) {
         textareaText = textareaText.substring(0, textareaElem.selectionStart) + textareaText.substring(textareaElem.selectionStart + 1, textareaText.length)
         } else {
@@ -278,13 +273,17 @@ function clickButton(code) {
         }
       }
 
-      if (code == 'Enter') {
-        textareaText = textareaText.substring(0, textareaElem.selectionStart) + '\n' + textareaText.substring(textareaElem.selectionEnd + 1, textareaText.length)
+      if (code === 'Enter') {
+        textareaText = textareaText.substring(0, textareaElem.selectionStart) + '\n' + textareaText.substring(textareaElem.selectionEnd, textareaText.length)
       }
 
-      if (code == 'Tab') {
-        textareaText = textareaText.substring(0, textareaElem.selectionStart) + '    ' + textareaText.substring(textareaElem.selectionEnd + 1, textareaText.length)
+      if (code === 'Tab') {
+        textareaText = textareaText.substring(0, textareaElem.selectionStart) + '    ' + textareaText.substring(textareaElem.selectionEnd, textareaText.length)
         textareaElem.value = textareaText
+      }
+
+      if (code.startsWith('Arrow')) {
+        updateTextarea(code)
       }
     
   } else {
