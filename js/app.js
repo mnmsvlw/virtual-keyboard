@@ -26,9 +26,13 @@ function createCustomElement(elem, customClassList, attributes = false) {
   element.classList = customClassList;
 
   if (attributes) {
-    for (const key of Object.keys(attributes)) {
+    // for (const key of Object.keys(attributes)) {
+    //   element.setAttribute(key, attributes[key]);
+    // }
+
+    Object.keys(attributes).forEach((key) => {
       element.setAttribute(key, attributes[key]);
-    }
+    });
   }
 
   return element;
@@ -59,9 +63,13 @@ function updateTextarea(code) {
   }
 
   if (index === endIndex) {
-    textareaText = textareaText.substring(0, index) + char + textareaText.substring(index, textareaText.length);
+    const firstSubString = textareaText.substring(0, index);
+    const secondSubString = textareaText.substring(index, textareaText.length);
+    textareaText = firstSubString + char + secondSubString;
   } else {
-    textareaText = textareaText.substring(0, index) + char + textareaText.substring(endIndex, textareaText.length);
+    const firstSubString = textareaText.substring(0, index);
+    const secondSubString = textareaText.substring(endIndex, textareaText.length);
+    textareaText = firstSubString + char + secondSubString;
   }
   textareaElem.value = textareaText;
   textareaElem.selectionStart = index;
@@ -87,27 +95,39 @@ function pressButton(event) {
 
     if (event.key === 'Backspace') {
       if (textareaElem.selectionStart === textareaElem.selectionEnd) {
-        textareaText = textareaText.substring(0, textareaElem.selectionStart - 1) + textareaText.substring(textareaElem.selectionStart, textareaText.length);
+        const firstSub = textareaText.substring(0, textareaElem.selectionStart - 1);
+        const secondSub = textareaText.substring(textareaElem.selectionStart, textareaText.length);
+        textareaText = firstSub + secondSub;
       } else {
-        textareaText = textareaText.substring(0, textareaElem.selectionStart) + textareaText.substring(textareaElem.selectionEnd, textareaText.length);
+        const firstSub = textareaText.substring(0, textareaElem.selectionStart);
+        const secondSub = textareaText.substring(textareaElem.selectionEnd, textareaText.length);
+        textareaText = firstSub + secondSub;
       }
     }
 
     if (event.key === 'Delete') {
       if (textareaElem.selectionStart === textareaElem.selectionEnd) {
-        textareaText = textareaText.substring(0, textareaElem.selectionStart) + textareaText.substring(textareaElem.selectionStart + 1, textareaText.length);
+        const first = textareaText.substring(0, textareaElem.selectionStart);
+        const second = textareaText.substring(textareaElem.selectionStart + 1, textareaText.length);
+        textareaText = first + second;
       } else {
-        textareaText = textareaText.substring(0, textareaElem.selectionStart) + textareaText.substring(textareaElem.selectionEnd, textareaText.length);
+        const first = textareaText.substring(0, textareaElem.selectionStart);
+        const second = textareaText.substring(textareaElem.selectionEnd, textareaText.length);
+        textareaText = first + second;
       }
     }
 
     if (event.key === 'Enter') {
-      textareaText = textareaText.substring(0, textareaElem.selectionStart) + '\n' + textareaText.substring(textareaElem.selectionEnd, textareaText.length);
+      const first = textareaText.substring(0, textareaElem.selectionStart);
+      const second = textareaText.substring(textareaElem.selectionEnd, textareaText.length);
+      textareaText = `${first}\n${second}`;
     }
 
     if (event.key === 'Tab') {
       event.preventDefault();
-      textareaText = textareaText.substring(0, textareaElem.selectionStart) + '    ' + textareaText.substring(textareaElem.selectionEnd, textareaText.length);
+      const first = textareaText.substring(0, textareaElem.selectionStart);
+      const second = textareaText.substring(textareaElem.selectionEnd, textareaText.length);
+      textareaText = `${first}    ${second}`;
       textareaElem.value = textareaText;
     }
 
@@ -136,26 +156,38 @@ function clickButton(code) {
 
     if (code === 'Backspace') {
       if (textareaElem.selectionStart === textareaElem.selectionEnd) {
-        textareaText = textareaText.substring(0, textareaElem.selectionStart - 1) + textareaText.substring(textareaElem.selectionStart, textareaText.length);
+        const first = textareaText.substring(0, textareaElem.selectionStart - 1);
+        const second = textareaText.substring(textareaElem.selectionStart, textareaText.length);
+        textareaText = first + second;
       } else {
-        textareaText = textareaText.substring(0, textareaElem.selectionStart) + textareaText.substring(textareaElem.selectionEnd, textareaText.length);
+        const first = textareaText.substring(0, textareaElem.selectionStart);
+        const second = textareaText.substring(textareaElem.selectionEnd, textareaText.length);
+        textareaText = first + second;
       }
     }
 
     if (code === 'Delete') {
       if (textareaElem.selectionStart === textareaElem.selectionEnd) {
-        textareaText = textareaText.substring(0, textareaElem.selectionStart) + textareaText.substring(textareaElem.selectionStart + 1, textareaText.length);
+        const first = textareaText.substring(0, textareaElem.selectionStart);
+        const second = textareaText.substring(textareaElem.selectionStart + 1, textareaText.length);
+        textareaText = first + second;
       } else {
-        textareaText = textareaText.substring(0, textareaElem.selectionStart) + textareaText.substring(textareaElem.selectionEnd, textareaText.length);
+        const first = textareaText.substring(0, textareaElem.selectionStart);
+        const second = textareaText.substring(textareaElem.selectionEnd, textareaText.length);
+        textareaText = first + second;
       }
     }
 
     if (code === 'Enter') {
-      textareaText = textareaText.substring(0, textareaElem.selectionStart) + '\n' + textareaText.substring(textareaElem.selectionEnd, textareaText.length);
+      const first = textareaText.substring(0, textareaElem.selectionStart);
+      const second = textareaText.substring(textareaElem.selectionEnd, textareaText.length);
+      textareaText = `${first}\n${second}`;
     }
 
     if (code === 'Tab') {
-      textareaText = textareaText.substring(0, textareaElem.selectionStart) + '    ' + textareaText.substring(textareaElem.selectionEnd, textareaText.length);
+      const first = textareaText.substring(0, textareaElem.selectionStart);
+      const second = textareaText.substring(textareaElem.selectionEnd, textareaText.length);
+      textareaText = `${first}    ${second}`;
       textareaElem.value = textareaText;
     }
 
@@ -168,7 +200,7 @@ function clickButton(code) {
 }
 
 function createKeyboardButtons(keyboardElem) {
-  for (const key of keys) {
+  keys.forEach((key) => {
     const keyButton = createCustomElement('div', `keyboard__button ${key.eventCode}`);
     const engCase = createCustomElement('div', 'eng');
     const engLower = createCustomElement('div', 'lower');
@@ -227,7 +259,7 @@ function createKeyboardButtons(keyboardElem) {
         setLocaleAndCase();
       }
     });
-  }
+  });
 }
 
 function createTextareaWindow(textareaWrapper) {
@@ -269,7 +301,8 @@ function addListeners() {
   textareaElem.tabIndex = -1;
   textareaElem.addEventListener('input', (event) => {
     const index = textareaElem.selectionStart;
-    event.target.value = textareaText;
+    const textField = event.target;
+    textField.value = textareaText;
     textareaElem.selectionStart = index;
     textareaElem.selectionEnd = index;
   });
