@@ -2,19 +2,20 @@ import keys from './keys.js'
 
 let textareaText = ''
 let textareaElem
-let currentLocale = 'eng'
+let currentLocale
 let currentCase = 'lower'
 let caps = false
 let selection
 let ignoredKeys = ['Backspace', 'Tab', 'Delete', 'CapsLock', 'Enter', 'ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight', 'AltLeft', 'AltRight', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'MetaLeft']
 
+getLocalStorage()
 init()
 
 function init() {
   const container = createCustomElement('div', 'container')
   const textareaWrapper = createCustomElement('div', 'textarea-wrapper')
   createTextareaWindow(textareaWrapper)
-  const keyboard = createCustomElement('div', 'keyboard en low')
+  const keyboard = createCustomElement('div', `keyboard ${currentLocale.slice(0,2)} low`)
   createKeyboardButtons(keyboard)
 
   container.appendChild(textareaWrapper)
@@ -156,6 +157,8 @@ function setLocaleAndCase() {
   } else {
     keyboard.classList = `keyboard ${currentLocale.slice(0,2)} ${currentCase.slice(0,3)} caps`
   }
+
+  setLocalStorage()
 }
 
 function updateTextarea(code) {
@@ -289,4 +292,15 @@ function clickButton(code) {
   } else {
     updateTextarea(code)
   }
+}
+
+function getLocalStorage() {
+  if (!localStorage.getItem('keyboardLang')) {
+    localStorage.setItem('keyboardLang', 'eng')
+  } 
+  currentLocale = localStorage.getItem('keyboardLang')
+}
+
+function setLocalStorage() {
+  localStorage.setItem('keyboardLang', currentLocale)
 }
