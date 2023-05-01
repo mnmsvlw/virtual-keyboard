@@ -1,9 +1,5 @@
-/* eslint-disable no-param-reassign */
-/* eslint-disable no-loop-func */
-/* eslint-disable prefer-template */
-/* eslint-disable max-len */
-/* eslint-disable no-restricted-syntax */
-import keys from './keys';
+/* eslint-disable import/extensions */
+import keys from './keys.js';
 
 let textareaText = '';
 let textareaElem;
