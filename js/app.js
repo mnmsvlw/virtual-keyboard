@@ -280,12 +280,17 @@ function createTextareaWindow(textareaWrapper) {
 
 function addListeners() {
   document.addEventListener('keydown', (event) => {
-    pressButton(event);
+    const char = keys.find((item) => event.code === item.eventCode);
+    if (char) {
+      pressButton(event);
+    }
   });
 
   document.addEventListener('keyup', (event) => {
     const button = document.querySelector(`.${event.code}`);
-    button.classList.remove('keyboard__button_active');
+    if (button) {
+      button.classList.remove('keyboard__button_active');
+    }
 
     if (event.key === 'Shift' && !event.repeat) {
       currentCase = currentCase === 'lower' ? 'upper' : 'lower';
