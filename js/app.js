@@ -75,7 +75,7 @@ function pressButton(event) {
   const button = document.querySelector(`.${event.code}`);
   button.classList.add('keyboard__button_active');
   if (ignoredKeys.includes(event.code)) {
-    if ((event.key === 'Alt' && event.ctrlKey) || (event.key === 'Ctrl' && event.altKey)) {
+    if ((event.key === 'Alt' && event.ctrlKey) || (event.key === 'Control' && event.altKey)) {
       currentLocale = currentLocale === 'eng' ? 'rus' : 'eng';
       setLocaleAndCase();
     }
@@ -241,19 +241,6 @@ function createKeyboardButtons(keyboardElem) {
       clickButton(code);
       textareaElem.value = textareaText;
     });
-
-    keyButton.addEventListener('mouseup', (event) => {
-      textareaElem.focus();
-      textareaElem.selectionStart = selection;
-      textareaElem.selectionEnd = selection;
-      const button = event.target.closest('.keyboard__button');
-      button.classList.remove('keyboard__button_active');
-      const code = button.classList[1];
-      if (code.startsWith('Shift')) {
-        currentCase = currentCase === 'lower' ? 'upper' : 'lower';
-        setLocaleAndCase();
-      }
-    });
   });
 }
 
@@ -314,6 +301,21 @@ function init() {
   createTextareaWindow(textareaWrapper);
   const keyboard = createCustomElement('div', `keyboard ${currentLocale.slice(0, 2)} low`);
   createKeyboardButtons(keyboard);
+
+  document.body.addEventListener('mouseup', () => {
+    textareaElem.focus();
+    textareaElem.selectionStart = selection;
+    textareaElem.selectionEnd = selection;
+    const button = document.querySelector('.keyboard__button_active');
+    if (button) {
+      button.classList.remove('keyboard__button_active');
+      const code = button.classList[1];
+      if (code.startsWith('Shift')) {
+        currentCase = currentCase === 'lower' ? 'upper' : 'lower';
+        setLocaleAndCase();
+      }
+    }
+  });
 
   container.appendChild(textareaWrapper);
   container.appendChild(keyboard);
