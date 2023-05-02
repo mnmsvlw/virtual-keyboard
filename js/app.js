@@ -1,4 +1,3 @@
-/* eslint-disable import/extensions */
 import keys from './keys.js';
 
 let textareaText = '';
