@@ -1,0 +1,305 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+  background-color: #d1d5da;
+  font-family: 'Montserrat', 'Verdana', sans-serif;
+}
+
+.container {
+  position: relative;
+  height: 600px;
+  width: 800px;
+  background-color: inherit;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.textarea-wrapper {
+  width: 98%;
+}
+
+.textarea-header {
+  position: relative;
+  height: 45px;
+  width: 100%;
+  background-color: #202020;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 20px;
+  padding-right: 15px;
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
+}
+
+.textarea {
+  width: 100%;
+  height: 240px;
+  outline: none;
+  border: none;
+  padding: 20px;
+  resize: none;
+  background-color: #272727;
+  font-size: 18px;
+  border-bottom-left-radius: 7px;
+  border-bottom-right-radius: 7px;
+  color: azure;
+}
+
+.textarea-header__title {
+  color: azure;
+  font: 700 14px 'Segoe UI';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.textarea-header__close,
+.textarea-header__collapse,
+.textarea-header__resize {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+
+.textarea-header__collapse::before {
+  position: absolute;
+  content: '';
+  height: 1.8px;
+  width: 18px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #f3f3f3;
+  border-radius: 2px;
+  transition: background-color .2s;
+}
+
+.textarea-header__collapse:hover::before {
+  background-color: #00CD1B;
+}
+
+.textarea-header__resize::before {
+  position: absolute;
+  content: '';
+  height: 12px;
+  width: 12px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 3px;
+  border: 2px solid #f3f3f3;
+  transition: border-color .2s;
+}
+
+.textarea-header__resize:hover::before {
+  border-color: #F1B05A;
+}
+
+.textarea-header__close::before {
+  position: absolute;
+  content: '';
+  height: 1.8px;
+  width: 20px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  background-color: #f3f3f3;
+  border-radius: 3px;
+  transition: background-color .2s;
+}
+
+.textarea-header__close::after {
+  position: absolute;
+  content: '';
+  height: 1.8px;
+  width: 20px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  background-color: #f3f3f3;
+  border-radius: 3px;
+  transition: background-color .2s;
+}
+
+.textarea-header__close:hover::after,
+.textarea-header__close:hover::before{
+  background-color: #FF514F;
+}
+
+.keyboard {
+  position: relative;
+  width: 98%;
+  height: 50%;
+  background-color: #2f363d;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 9px 10px 5px;
+  border: 3px solid #141618;
+  border-radius: 10px;
+  box-shadow: 0 13px 0 #242729, 0 15px 0 0 #000;
+}
+
+.keyboard__button {
+  position: relative;
+  width: 45px;
+  height: 45px;
+  background-color: #24292e;
+  margin-left: 4px;
+  line-height: 45px;
+  color: azure;
+  border: 1px solid #151516;
+  border-radius: 5px;
+  transition: transform 0.15s, background-color 0.15s;
+  transform-style: preserve-3d;
+  cursor: pointer;
+  user-select: none;
+}
+
+.keyboard__button::before {
+  position: absolute;
+  content: '';
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #2a2e31;
+  border-radius: inherit;
+  box-shadow: 0 0 0 1px #151516, 0 0.1em 0 0 #000;
+  transform: translate3d(0, 0.4em, -1em);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.keyboard__button:hover {
+  background-color: #1c2023;
+  transform: translate(0, 0.1em);
+}
+
+.keyboard__button:hover::before {
+  box-shadow: 0 0 0 1px #151516, 0 0.1em 0 0 #000;
+  transform: translate3d(0, 0.3em, -1em);
+}
+
+.keyboard__button_active,
+.keyboard__button:active {
+  background-color: #1c2023;
+  transform: translate(0, 0.4em);
+}
+
+.keyboard__button_active::before,
+.keyboard__button:active::before {
+  box-shadow: 0 0 0 1px #151516, 0 0 0 0 #000;
+  transform: translate3d(0, 0em, -1em);
+}
+
+.CapsLock::after {
+  position: absolute;
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: #2f363d;
+  border: 1px solid #151516;
+  right: 5px;
+  top: 5px;
+  transition: background-color .15s;
+}
+
+.keyboard.caps .CapsLock::after,
+.CapsLock.keyboard__button_active::after {
+  background-color: #00CD1B;
+}
+
+.Backspace,
+.ShiftLeft {
+  width: 100px;
+}
+
+.CapsLock {
+  position: relative;
+  width: 90px;
+}
+
+.Enter {
+  width: 85px;
+}
+
+.Tab {
+  width: 75px;
+}
+
+.ShiftRight {
+  width: 97px;
+}
+
+.Space {
+  width: 350px;
+}
+
+.rus .lower,
+.rus .upper,
+.eng .lower,
+.eng .upper,
+.rus .capsed,
+.rus .shiftcapsed,
+.eng .capsed,
+.eng .shiftcapsed {
+  visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+
+.keyboard.ru.low .rus .lower,
+.keyboard.ru.upp .rus .upper,
+.keyboard.en.low .eng .lower,
+.keyboard.en.upp .eng .upper,
+.keyboard.ru.low.caps .rus .capsed,
+.keyboard.en.low.caps .eng .capsed,
+.keyboard.ru.upp.caps .rus .shiftcapsed,
+.keyboard.en.upp.caps .eng .shiftcapsed{
+  visibility: visible;
+}
+
+.keyboard.en.low.caps .eng .lower,
+.keyboard.en.upp.caps .eng .upper,
+.keyboard.ru.low.caps .rus .lower,
+.keyboard.ru.upp.caps .rus .upper {
+  visibility: hidden;
+}
+
+/* .keyboard.ru.low.caps .key .rus .upper,
+.keyboard.ru.upp.caps .key .rus .lower,
+.keyboard.en.low.caps .key .eng .upper,
+.keyboard.en.upp.caps .key .eng .lower,
+.keyboard.ru.upp.caps .Backquote .rus .lower,
+.keyboard.ru.low.caps .Backquote .rus .upper {
+  visibility: visible;
+}
+
+.keyboard.ru.low.caps .key .rus .lower,
+.keyboard.ru.upp.caps .key .rus .upper,
+.keyboard.en.low.caps .key .eng .lower,
+.keyboard.en.upp.caps .key .eng .upper,
+.keyboard.ru.upp.caps .Backquote .rus .upper,
+.keyboard.ru.low.caps .Backquote .rus .lower {
+  visibility: hidden;
+} */
